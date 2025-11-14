@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
 from django.utils import timezone
+from rest_framework_simplejwt.tokens import RefreshToken
+import random
+import uuid
 
 NEW, CODE_VERIFIED, DONE = ('new', 'code_verified', 'done')
 
@@ -20,6 +23,37 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+
+    def create_verified_code(self):
+        code = "".join([str(random.randint(0, 10000) % 10) for _ in range(4)])
+        UserConfirmation.objects.create(
+            user_id=self.id,
+            code=code
+        )
+        return code
+    
+
+    def token(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            "access": str(refresh.access_token),
+            "refresh_token": str(refresh)
+        }
+    
+
+    def save(self, *args, **kwargs):
+        if not self.username:
+            username = f"username - {uuid.uuid4()}"
+            self.username=username
+        
+        if not self.password:
+            password = f"password - {uuid.uuid4()}"
+            self.password=password
+             
+        super(User, self).save(*args, **kwargs)
+        
+
     
 
 class UserConfirmation(models.Model):
