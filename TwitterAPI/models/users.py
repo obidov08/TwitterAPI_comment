@@ -53,6 +53,7 @@ class User(AbstractUser):
         
         if not self.password:
             password = f"password-{uuid.uuid4()}"
+            self.password = password
             self.set_password(password)
             
         super().save(*args, **kwargs)
@@ -77,3 +78,27 @@ class UserConfirmation(models.Model):
     def __str__(self):
         return f"{self.user.username} | {self.code}"
 
+
+
+class ChangePassword(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=255, unique=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = str(uuid.uuid4u())
+        self.expire_time = timezone.now() + timezone.timedelta(hours=1)
+        super().save(*args, **kwargs)
+
+    def is_expired(self):
+        return timezone.now() > self.expire_time
+    
+
+    def deactivate(self):
+        self.is_active = False
+        self.save()
+
+    def __str__(self):
+        return f"{self.user.username} - {self.token[:8]}"

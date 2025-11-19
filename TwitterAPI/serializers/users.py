@@ -1,6 +1,8 @@
 from rest_framework import serializers, status
 from TwitterAPI.models import User, DONE
 import re
+from TwitterAPI.utils import username_or_email
+from TwitterAPI.models.users import token
 
 
 class EmailSerializer(serializers.Serializer):
@@ -46,3 +48,38 @@ class FullSignUpSerializer(serializers.Serializer):
         if password != reset_password:
             raise serializers.ValidationError("Password don't match")
         return validated_data
+    
+
+class LoginSerializer(serializers.Serializer):
+    user_input = serializers.CharField(required=True)
+    username = serializers.CharField(read_only=True)
+    password = serializers.CharField(required=True)
+
+    def validate(self, validate_data):
+        user_input = validate_data.get('user_input')
+        if username_or_email(user_input):
+            user = User.objects.filter(email=user_input).filter(status=DONE).first()
+            if user is not None:
+                validate_data['username'] = user.username
+        else:
+            validate_data['username'] = user_input
+        return validate_data
+
+
+class ChangePasswordRequestSerializer(serializers.Serializer):
+    change_password = serializers.CharField(required=True)
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    token = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    repeat_password = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        new_password = attrs.get('new_password')
+        repeat_password = attrs.get('repeat_password')
+
+        if new_password != repeat_password:
+            raise serializers.ValidationError("Password don't match")
+        
+        return attrs
