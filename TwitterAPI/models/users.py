@@ -88,7 +88,7 @@ class ChangePassword(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.token:
-            self.token = str(uuid.uuid4u())
+            self.token = str(uuid.uuid4())
         self.expire_time = timezone.now() + timezone.timedelta(hours=1)
         super().save(*args, **kwargs)
 

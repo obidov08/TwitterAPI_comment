@@ -41,5 +41,5 @@ class CustomResponse:
             status=st.HTTP_400_BAD_REQUEST,
         )
     
-    def username_or_email(user_input: str):
-        return re.match(r'[a-zA-Z0-9._%+-]@[a-zA-Z0-9.-]+\.[a-zA-Z]{2, }$', user_input)
+def username_or_email(user_input: str):
+    return re.match(r'[a-zA-Z0-9._%+-]@[a-zA-Z0-9.-]+\.[a-zA-Z]{2, }$', user_input)

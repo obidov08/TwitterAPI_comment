@@ -1,8 +1,8 @@
+from django.db import utils
 from rest_framework import serializers, status
 from TwitterAPI.models import User, DONE
-import re
 from TwitterAPI.utils import username_or_email
-from TwitterAPI.models.users import token
+import re
 
 
 class EmailSerializer(serializers.Serializer):

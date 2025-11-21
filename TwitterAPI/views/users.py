@@ -1,19 +1,18 @@
 from rest_framework.views import APIView
-from TwitterAPI.utils import send_code_to_email
+from TwitterAPI.utils import CustomResponse, send_code_to_email
 from django.core.mail import send_mail
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.template.context_processors import request
-from TwitterAPI.serializers.users import ChangePasswordRequestSerializer, CodeSerializer, EmailSerializer, FullSignUpSerializer, LoginSerializer, validate
-from TwitterAPI.models import User, CODE_VERIFIED, DONE
-from rest_framework import serializers, status
-from TwitterAPI.utils import CustomResponse
-from TwitterAPI.models.users import User, ChangePassword
+from TwitterAPI.serializers.users import ChangePasswordRequestSerializer, CodeSerializer, EmailSerializer, FullSignUpSerializer, LoginSerializer
+from TwitterAPI.models import User, ChangePassword, CODE_VERIFIED, DONE
+from rest_framework import status
 from config.settings import EMAIL_HOST_USER
+from drf_spectacular.utils import extend_schema
 
 
+@extend_schema(tags=['Auth'])
 class SendEmailRegistrationApiView(APIView):
     serializer_class = EmailSerializer
     permission_classes = [AllowAny]
@@ -50,6 +49,7 @@ class SendEmailRegistrationApiView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         
 
+@extend_schema(tags=['Auth'])
 class CodeVerifiedAPIView(APIView):
     serializer_class = CodeSerializer
     permission_classes = [IsAuthenticated, ]
@@ -79,7 +79,9 @@ class CodeVerifiedAPIView(APIView):
             user.save()  
             return True
         return False
-        
+
+
+@extend_schema(tags=['Auth'])     
 class ResendCodeAPIView(APIView):
     permission_classes = [IsAuthenticated, ]
 
@@ -102,6 +104,7 @@ class ResendCodeAPIView(APIView):
         )
     
 
+@extend_schema(tags=['Auth'])
 class FullSignUpAPIVIew(APIView):
     serializer_class = FullSignUpSerializer
     permission_classes = [IsAuthenticated, ]
@@ -141,8 +144,10 @@ class FullSignUpAPIVIew(APIView):
             message="User has been registered successfully",
             data=data
         )
-        
 
+
+
+@extend_schema(tags=['Auth'])
 class LoginAPIView(APIView):
     serializer_class = LoginSerializer
 
@@ -161,6 +166,7 @@ class LoginAPIView(APIView):
             )
         return CustomResponse.success(status=True, message='ozodbek')
     
+
 class ResendCodeAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -182,6 +188,7 @@ class ResendCodeAPIView(APIView):
         )
     
 
+@extend_schema(tags=['Auth'])
 class ChangePasswordRequestView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -212,6 +219,7 @@ class ChangePasswordRequestView(APIView):
         )
     
 
+@extend_schema(tags=['Auth'])
 class ChangePasswordView(APIView):
     permission_classes = [AllowAny] 
 
