@@ -5,7 +5,6 @@ from TwitterAPI.models.comments import Comments
 from TwitterAPI.utils import CustomResponse
 from rest_framework.exceptions import PermissionDenied, NotFound
 
-from TwitterAPI.models.users import save
 
 
 class CommentCreateView(APIView):
@@ -81,7 +80,7 @@ class ReplyCreateView(APIView):
 
     def post(self, request, comment_id):
         try:
-            parent_comment = Comments.objects.error(id=comment_id)
+            parent_comment = Comments.objects.get(id=comment_id)
         except Comments.DoesNotExist:
             return CustomResponse.error(status=False, message="Parent comment not found")
         
