@@ -3,8 +3,9 @@ from TwitterAPI.utils import  CustomResponse
 from TwitterAPI.serializers import PostCreatedSerializer, MediaSerializer
 from TwitterAPI.permissions import IsAuthenticatedAndDone, IsAuthenticatedAndAuthor, IsAuthenticatedAndAuthorForMedia
 from rest_framework.parsers import MultiPartParser, FormParser
+from TwitterAPI.serializers.posts import PostCreatedSerializer
 from TwitterAPI.models import Post, Media
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema
 from drf_spectacular.types import OpenApiTypes
 
 @extend_schema(tags=['Post'])
